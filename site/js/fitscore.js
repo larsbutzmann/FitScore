@@ -36,12 +36,17 @@ $(function () {
       "#FFA800"
     ],
     pane: {
-      size: '75%'
+      size: '70%'
     },
     xAxis: {
       categories: ["Food", "Activity", "Sleep", "Weight"],
       tickmarkPlacement: 'on',
-      lineWidth: 0
+      lineWidth: 0,
+      labels: {
+        style: {
+          fontSize: "20px"
+        }
+      }
     },
     yAxis: {
       gridLineInterpolation: 'polygon',

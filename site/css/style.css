@@ -1,0 +1,23 @@
+html {
+    height: 100%;
+}
+
+body {
+    font-family: sans-serif;
+    color: #777;
+    height: 100%;
+}
+
+canvas {
+    width: auto !important;
+    height: 100% !important;
+}
+
+#main {
+    margin: 0 auto;
+    width: 80%;
+}
+
+#top {
+    height: 100px;
+}

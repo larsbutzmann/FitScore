@@ -1,18 +1,49 @@
 var express = require("express");
 var runkeeper = require('runkeeper-js');
+var http = require("http");
+var async = require("async");
+
 var app = express();
 app.use(express.logger());
 
-app.get('/', function(request, response) {
-  response.send('Hello World!');
+app.configure(function() {
+  app.set('views', __dirname + '/site/views');
+  app.set('view engine', 'jade');
+  app.use(express.static(__dirname + '/site'));
+  app.use(express.methodOverride());
+  // app.use(app.router);
+  //Show all errors in development
+  // app.use(express.errorHandler({dumpExceptions: true, showStack: true}));
+});
+
+app.get('/', function (req, res) {
+  res.render('index');
+});
+
+app.get("/score", function(req, res) {
+  async.parallel([
+      function(cb) {
+        sapdata(cb, "calories", 1, "2013-08-30", "2013-08-31");
+      },
+      function(cb) {
+        sapdata(cb, "distance", 1, "2013-08-30", "2013-08-31");
+      },
+      function(cb) {
+        sapdata(cb, "steps", 1, "2013-08-30", "2013-08-31");
+      }
+    ],
+    function(err, results) {
+      res.send(results);
+    });
 });
 
 var port = process.env.PORT || 5000;
+
 app.listen(port, function() {
   console.log("Listening on " + port);
 });
 
-app.get('/runkeeper', function(request, response) {
+app.get('/runkeeper/:metric', function(request, response) {
 
 	var options = exports.options = {
 		client_id : "7444a58b752f4cb5adc0dec149ff8f0d",
@@ -24,35 +55,71 @@ app.get('/runkeeper', function(request, response) {
 		api_domain : "api.runkeeper.com"
 	};
 	
-	var responseObject = {
-		calories_per_month : 0,
-		distance_per_month : 0,
-		activity_index_per_month : 0,
-		average_sleep_length_per_month : 0,
-		average_weight_per_month : 0,
-		calories_today : 0,
-		distance_today : 0,
-		activity_index_today : 0,
-		sleep_length_today : 0
-	};
-	
-	function aggregateDataPerTimeframe(
+	var aggregateDataPerTimeframe = function(data, startDate, endDate) {
+		var res = { duration : 0, distance : 0, calories : 0 };
+		for(i = 0; i < data.length; i++) {
+			if (data[i].start_time >= startDate && data[i].timestamp <= endDate) {
+				res.duration += data[i].duration;
+				res.distance += data[i].total_distance;
+				res.calories += data[i].total_calories;
+			}
+		}
+		return res;
+	}
 	
 	var client = new runkeeper.HealthGraph(options);
 	
-	// client.fitnessActivityFeed(function(err, reply) {
-		// if(err) { console.log(err); }
-		// bla = reply;
-	// });
-	
-	client.apiCall("GET", "application/vnd.com.runkeeper.WeightSetFeed+json", "/weight?pageSize=100", function(err, reply) {
-		if(err) { console.log(err); }
-		response.send(reply);
-	});
-	
-	client.apiCall("GET", "application/vnd.com.runkeeper.SleepSetFeed+json", "/sleep?pageSize=100", function(err, reply) {
-		if(err) { console.log(err); }
-		response.send(reply);
-	});
-	
+	if (request.params.metric == "weight") {
+		client.apiCall("GET", "application/vnd.com.runkeeper.WeightSetFeed+json", "/weight?pageSize=1", function(err, reply) {
+			if(err) { console.log(err); }
+			if(reply.items.length > 0) {
+				response.send(reply.items[0].weight + "");
+			} else {
+				response.send("0");
+			}
+		});
+	}
+	else if (request.params.metric == "sleep") {
+		client.apiCall("GET", "application/vnd.com.runkeeper.SleepSetFeed+json","/sleep?pageSize=1", function(err, reply) {
+			if(err) { console.log(err); }
+			if(reply.items.length > 0) {
+				response.send(reply.items);
+				response.send(reply.items[0].total_sleep + "");
+			} else {
+				response.send("0");
+			}
+		});
+	}
+	else if (request.params.metric == "active") {
+		client.fitnessActivityFeed(function(err, reply) {
+			if(err) { console.log(err); }
+			if(reply.items.length > 0) {
+				response.send(aggregateDataPerTimeframe(reply.items, "2013-08-30", "2013-08-31"));
+			} else {
+				response.send({ duration : 0, distance : 0, calories : 0 });
+			}
+		});
+	}
+	else response.send("try:	/weight /sleep /active ");
 });
+
+var sapdata = function(cb, dataName, userId, startDate, endDate) {
+  var store = '';
+  var url = "http://fitbitreaduser:FitBit123@shatechcrunchhana.sapvcm.com:8000/fitbit/services/";
+  url += dataName + "Sum.xsjs";
+  url += "?userSurrId=" + userId;
+  url += "&startDate=" + startDate;
+  url += "&endDate=" + endDate;
+
+  http.get(url, function(resp) {
+    resp.on("data", function(chunk) {
+      store += chunk;
+    })
+    .on("end", function() {
+      cb(null, store);
+    })
+    .on("error", function(e) {
+      cb("error");
+    });
+  });
+};

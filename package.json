@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "express": "3.1.x",
-	"runkeeper-js": "0.1.2"
+	"runkeeper-js": "0.1.2",
+    "jade": ">= 0.32.0",
+    "async": "~0.2.9"
   },
   "engines": {
     "node": "0.10.x",

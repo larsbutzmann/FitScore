@@ -1,5 +1,6 @@
 var express = require("express");
 var app = express();
+var http = require("http");
 app.use(express.logger());
 
 app.configure(function() {
@@ -16,6 +17,16 @@ app.get('/', function (req, res) {
   res.render('index');
 });
 
+var fitbitUrl = "http://fitbitreaduser:FitBit123@shatechcrunchhana.sapvcm.com:8000/fitbit/services/distance.xsjs?userSurrId=11";
+
+http.get(fitbitUrl, function(res) {
+  console.log("Got response: " + res.statusCode);
+  res.on('data', function (chunk) {
+    console.log('BODY: ' + chunk);
+  });
+}).on('error', function(e) {
+  console.log("Got error: " + e.message);
+});
 
 function startKeepAlive() {
   setInterval(function() {

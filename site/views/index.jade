@@ -5,6 +5,11 @@ html
     include includes/head
 
   body
-    div.pure-g-r
-      canvas#myChart(width="800", height="800")
+    div.bck.center
+      div.row.margin-top
+        div.column_3.offset_4.margin
+          div#slider
+
+      div.row
+        div#container(style="min-width: 400px; max-width: 1000px; height: 100%; margin: 0 auto")
     include includes/scripts

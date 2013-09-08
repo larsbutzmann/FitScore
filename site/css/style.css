@@ -8,16 +8,16 @@ body {
     height: 100%;
 }
 
-canvas {
-    width: auto !important;
-    height: 100% !important;
+.cockpit {
+    margin: 10px;
+    padding: 30px 10px;
+    background-color: #FFD687;
 }
 
-#main {
-    margin: 0 auto;
-    width: 80%;
+.cockpit h3 {
+    font-weight: bold;
 }
 
-#top {
-    height: 100px;
+.cockpit p {
+    font-size: 2em;
 }

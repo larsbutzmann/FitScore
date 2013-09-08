@@ -1,6 +1,8 @@
 var express = require("express");
-var app = express();
 var http = require("http");
+var async = require("async");
+
+var app = express();
 app.use(express.logger());
 
 app.configure(function() {
@@ -15,17 +17,6 @@ app.configure(function() {
 
 app.get('/', function (req, res) {
   res.render('index');
-});
-
-var fitbitUrl = "http://fitbitreaduser:FitBit123@shatechcrunchhana.sapvcm.com:8000/fitbit/services/distance.xsjs?userSurrId=11";
-
-http.get(fitbitUrl, function(res) {
-  console.log("Got response: " + res.statusCode);
-  res.on('data', function (chunk) {
-    console.log('BODY: ' + chunk);
-  });
-}).on('error', function(e) {
-  console.log("Got error: " + e.message);
 });
 
 function startKeepAlive() {
@@ -53,6 +44,25 @@ function startKeepAlive() {
 startKeepAlive();
 
 var port = process.env.PORT || 5000;
+
 app.listen(port, function() {
   console.log("Listening on " + port);
 });
+
+var distance = function(cb) {
+  var store = '';
+  console.log("Sending");
+  http.get("http://fitbitreaduser:FitBit123@shatechcrunchhana.sapvcm.com:8000/fitbit/services/calories.xsjs?userSurrId=4", function(resp) {
+    resp.on("data", function(chunk) {
+      store += chunk;
+    })
+    .on("end", function() {
+      cb(null, store);
+    })
+    .on("error", function(e) {
+      cb("error");
+      console.log("Got error: " + e.messsage);
+    });
+  });
+};
+

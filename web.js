@@ -38,7 +38,10 @@ app.get("/score", function(req, res) {
       resultObject = {
         foodScore: foodScore,
         activityScore: activityScore,
-        sleepScore: sleepScore
+        sleepScore: sleepScore,
+        calories: calories,
+        steps: results.steps,
+        sleep: getSleep(req.query.userId, req.query.date)
       };
       res.send(resultObject);
     });
@@ -85,9 +88,7 @@ var getSleep = function(userId, date) {
 
 var getSleepScore = function(userId, date) {
   return Math.min(getSleep(userId, date), 8) / 8 * 10;
-}
-
-
+};
 
 var sapdata = function(cb, dataName, userId, startDate, endDate) {
   var store = '';

@@ -7,9 +7,19 @@ html
   body
     div.bck.center
       div.row.margin-top
-        div.column_3.offset_4.margin
-          div#slider
-
+        div.column_3
+          img(src="img/Fitscore_gradient.png" height="100px")
+        div.column_5.offset_2.margin-top.center
+          h1 Visualize your Health
+      hr
       div.row
-        div#container(style="min-width: 400px; max-width: 1000px; height: 100%; margin: 0 auto")
+        div.column_4
+          span#placeholder &nbsp;
+        div.column_4.margin
+          div.row
+            div.column_4.margin
+              span#slide-val 10
+              div#slider
+          div.row
+            div#container(style="min-width: 400px; max-width: 1000px; height: 100%; margin: 0 auto")
     include includes/scripts

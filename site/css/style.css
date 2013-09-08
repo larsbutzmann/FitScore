@@ -30,7 +30,7 @@ body hr {
     text-align: center;
 }
 
-.score {
+#score {
     font-size: 10em;
     text-align: center;
     padding: 25px;

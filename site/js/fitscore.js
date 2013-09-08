@@ -68,11 +68,11 @@ $(function () {
         success: function (data) {
           _log(data);
           var userData = [];
-          for (var o in data) {
-            if (data[o] === null) {
-              data[o] = 5;
+          for (var o in data["scores"]) {
+            if (data["scores"][o] === null) {
+              data["scores"][o] = 5;
             }
-            userData.push(data[o]);
+            userData.push(data["scores"][o]);
           }
           userData.push(7);
           _log(userData);
@@ -80,9 +80,16 @@ $(function () {
           chart.series[0].setVisible(false);
           chart.series[0].setData(userData, true);
           chart.series[0].setVisible(true, true);
+
+          var sum = 0;
+          for (var i = 0; i < userData.length; i++) {
+            sum += userData[i];
+          }
+          _log(userData);
+          var score = Math.round(sum/(userData.length+1) * 10) / 10;
+          $("#score").text(score);
         }
     });
-    var user1 = generateData();
   }
 
 });
@@ -94,11 +101,4 @@ function shuffle(o) {
 
 function _log(text) {
   return console.log(text);
-}
-
-function generateData() {
-  for (var a=[],i=0;i<4;++i) {
-    a[i] = Math.floor((Math.random()*100)+1);
-  }
-  return a;
 }

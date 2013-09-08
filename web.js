@@ -30,10 +30,10 @@ app.get("/score", function(req, res) {
       }
     },
     function(err, results) {
-      var stepScore = calculateStepScore(results.steps);
+      var activityScore = calculateStepScore(results.steps);
       var calories = getCalories(req.query.userId, req.query.date);
       var caloriesForUser = getCaloriesForUser(req.query.userId);
-      var activityScore = (caloriesForUser - Math.abs(calories - caloriesForUser)) / caloriesForUser * 10;
+      var foodScore = (caloriesForUser - Math.abs(calories - caloriesForUser)) / caloriesForUser * 10;
       resultObject = {
         foodScore: foodScore,
         activityScore: activityScore

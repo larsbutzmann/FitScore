@@ -19,6 +19,23 @@ app.get('/', function (req, res) {
   res.render('index');
 });
 
+app.get("/score", function(req, res) {
+  async.parallel([
+      function(cb) {
+        sapdata(cb, "calories", 1, "2013-08-30", "2013-08-31");
+      },
+      function(cb) {
+        sapdata(cb, "distance", 1, "2013-08-30", "2013-08-31");
+      },
+      function(cb) {
+        sapdata(cb, "steps", 1, "2013-08-30", "2013-08-31");
+      }
+    ],
+    function(err, results) {
+      res.send(results);
+    });
+});
+
 function startKeepAlive() {
   setInterval(function() {
     var options = {
@@ -49,10 +66,15 @@ app.listen(port, function() {
   console.log("Listening on " + port);
 });
 
-var distance = function(cb) {
+var sapdata = function(cb, dataName, userId, startDate, endDate) {
   var store = '';
-  console.log("Sending");
-  http.get("http://fitbitreaduser:FitBit123@shatechcrunchhana.sapvcm.com:8000/fitbit/services/calories.xsjs?userSurrId=4", function(resp) {
+  var url = "http://fitbitreaduser:FitBit123@shatechcrunchhana.sapvcm.com:8000/fitbit/services/";
+  url += dataName + "Sum.xsjs";
+  url += "?userSurrId=" + userId;
+  url += "&startDate=" + startDate;
+  url += "&endDate=" + endDate;
+
+  http.get(url, function(resp) {
     resp.on("data", function(chunk) {
       store += chunk;
     })
@@ -61,8 +83,6 @@ var distance = function(cb) {
     })
     .on("error", function(e) {
       cb("error");
-      console.log("Got error: " + e.messsage);
     });
   });
 };
-

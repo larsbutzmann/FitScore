@@ -1,6 +1,9 @@
 $(function () {
 
   var dateMap = ["09-01-2013", "09-02-2013", "09-03-2013", "09-04-2013", "09-05-2013", "09-06-2013", "09-07-2013"];
+  var unitMap = {"sleep": "h", "calories": "kcal", "weight": "kg", "distance": "km"};
+
+  var colorMap = ["#ff0000", "#ff2300", "#ff4500", "#ff8000", "#ffB000", "#FFFF00", "#B0FF00", "#80FF00", "#40FF00", "#00FF00"];
 
   $(function() {
     $( "#slider" ).slider({
@@ -15,7 +18,7 @@ $(function () {
     });
   });
 
-  $('#container').highcharts({
+  $('#chart').highcharts({
     chart: {
       polar: true,
       type: 'line'
@@ -75,8 +78,8 @@ $(function () {
             userData.push(data["scores"][o]);
           }
           userData.push(7);
-          _log(userData);
-          var chart = $('#container').highcharts();
+
+          var chart = $('#chart').highcharts();
           chart.series[0].setVisible(false);
           chart.series[0].setData(userData, true);
           chart.series[0].setVisible(true, true);
@@ -85,9 +88,15 @@ $(function () {
           for (var i = 0; i < userData.length; i++) {
             sum += userData[i];
           }
-          _log(userData);
+
           var score = Math.round(sum/(userData.length+1) * 10) / 10;
           $("#score").text(score);
+          $("#score").css("background-color", colorMap[Math.floor(score+1)]);
+
+          for (var o in data["absoluteValues"]) {
+            $("#"+o).text(data["absoluteValues"][o] + " " + unitMap[o]);
+          }
+
         }
     });
   }

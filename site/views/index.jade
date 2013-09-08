@@ -5,41 +5,42 @@ html
     include includes/head
 
   body
-    div.header
-      div.row.padding-top
-        div.column_3
-          img(src="img/Fitscore.png")
-        div.column_5.offset_2.margin-top
-          h1 Visualize your Health
-    hr
-    div.row
-      div.column_4
-        div.row.margin
-          div.column_2.cockpit
-            h3 Distance
-            p 3.5 km
-          div.column_2.cockpit
-            h3 Calories
-            p 2102 kcal
-        div.row.margin
-          div.column_2.cockpit
-            h3 Sleep
-            p 7.8 h
-          div.column_2.cockpit
-            h3 Weight
-            p 73.7 kg
-      div.column_4
-        div#score 9.6
-      div.column_4
-        div.row
-          div.column_4.margin
-            h1#slider-val 09-07-2013
-            div#slider
-        div.row
-          div#container(style="width: 400px; max-width: 800px; height: 100%; margin: 0 auto")
-    div#footer
+    div#container
+      div.header
+        div.row.padding-top
+          div.column_3
+            img(src="img/Fitscore.png")
+          div.column_5.offset_2.margin-top
+            h1 Visualize your Health
+      hr
       div.row
-        h4 Data provided by
-          img(src="img/FitbitR-Logo-small.png")
-          img(src="img/runkeeper.png")
+        div.column_4
+          div.row.margin
+            div.column_2.cockpit
+              h3 Distance
+              p#activity 3.5 km
+            div.column_2.cockpit
+              h3 Calories
+              p#calories 2102 kcal
+          div.row.margin
+            div.column_2.cockpit
+              h3 Sleep
+              p#sleep 7.8 h
+            div.column_2.cockpit
+              h3 Weight
+              p#weight 73.7 kg
+        div.column_3
+          div.row
+            div.column_3.margin
+              h1#slider-val 09-07-2013
+              div#slider
+          div#score 9.6
+        div.column_5
+          div.row
+            div#chart(style="width: 400px; max-width: 800px; height: 100%; margin: 0 auto")
+      div#footer
+        div.row
+          h4 Data provided by
+            img(src="img/FitbitR-Logo-small.png")
+            img(src="img/runkeeper.png")
     include includes/scripts

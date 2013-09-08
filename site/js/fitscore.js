@@ -54,6 +54,7 @@ $(function () {
     },
 
     series: [{
+      color: '#FFA800',
       name: 'User 1',
       data: [65,59,90,81],
       pointPlacement: 'on'

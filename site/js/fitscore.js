@@ -7,7 +7,7 @@ $(function () {
       step: 1,
       value: 10,
       slide: function( event, ui ) {
-        $("#slide-val").text(ui.value);
+        $("#slider-val").text(ui.value);
         updateData();
       }
     });
@@ -24,6 +24,10 @@ $(function () {
       text: '',
       x: 0
     },
+
+    colors: [
+      "#FFA800"
+    ],
 
     pane: {
       size: '75%'

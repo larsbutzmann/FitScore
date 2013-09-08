@@ -21,3 +21,13 @@ body {
 .cockpit p {
     font-size: 2em;
 }
+
+#slider-val {
+    text-align: center;
+}
+
+.score {
+    font-size: 10em;
+    text-align: center;
+    padding: 25px;
+}

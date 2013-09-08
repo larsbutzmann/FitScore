@@ -40,8 +40,8 @@ body hr {
     text-align: center;
     padding: 20px;
     height: 200px;
-    background-color: #FF0000;
     color: #000000;
+    /*font-weight: bold;*/
 }
 
 .header {

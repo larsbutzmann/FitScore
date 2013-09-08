@@ -5,6 +5,9 @@ $(function () {
 
   var colorMap = ["#ff0000", "#ff2300", "#ff4500", "#ff8000", "#ffB000", "#FFFF00", "#B0FF00", "#80FF00", "#40FF00", "#00FF00"];
 
+  // initialize
+  updateData(11, dateMap[dateMap.length-1]);
+
   $(function() {
     $( "#slider" ).slider({
       min: 0,
@@ -58,7 +61,7 @@ $(function () {
     },
     series: [{
       name: 'User 1',
-      data: [9.8, 7.6, 3.5, 7.4],
+      data: [],
       pointPlacement: 'on'
     }]
   });
@@ -70,6 +73,7 @@ $(function () {
         url: "/score?userId=" + userId + "&date=" + date,
         success: function (data) {
           _log(data);
+
           var userData = [];
           for (var o in data["scores"]) {
             if (data["scores"][o] === null) {

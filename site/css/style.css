@@ -8,6 +8,10 @@ body {
     height: 100%;
 }
 
+body hr {
+    margin: 0px;
+}
+
 .cockpit {
     margin: 10px;
     padding: 30px 10px;
@@ -30,4 +34,17 @@ body {
     font-size: 10em;
     text-align: center;
     padding: 25px;
+}
+
+.header {
+    background-color: #FAFAFA;
+}
+
+#footer {
+    padding: 20px;
+    background-color: #FAFAFA;
+}
+
+#footer img {
+    margin-left: 50px;
 }

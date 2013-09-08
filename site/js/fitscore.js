@@ -5,7 +5,9 @@ $(function () {
       min: 0,
       max: 10,
       step: 1,
+      value: 10,
       slide: function( event, ui ) {
+        $("#slide-val").text(ui.value);
         updateData();
       }
     });

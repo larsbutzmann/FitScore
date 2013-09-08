@@ -30,10 +30,18 @@ body hr {
     text-align: center;
 }
 
-.score {
-    font-size: 10em;
+#container {
+    min-height: 100%;
+    position: relative;
+}
+
+#score {
+    font-size: 8em;
     text-align: center;
-    padding: 25px;
+    padding: 20px;
+    height: 200px;
+    color: #000000;
+    /*font-weight: bold;*/
 }
 
 .header {
@@ -43,8 +51,28 @@ body hr {
 #footer {
     padding: 20px;
     background-color: #FAFAFA;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
 }
 
 #footer img {
     margin-left: 50px;
+}
+
+#gradient {
+    /* Safari 4-5, Chrome 1-9 */
+    background: -webkit-gradient(linear, left top, right bottom, from(#1a82f7), to(#2F2727));
+
+    /* Safari 5.1, Chrome 10+ */
+    background: -webkit-linear-gradient(bottom, #2F2727, #1a82f7);
+
+    /* Firefox 3.6+ */
+    background: -moz-linear-gradient(bottom, #2F2727, #1a82f7);
+
+    /* IE 10 */
+    background: -ms-linear-gradient(bottom, #2F2727, #1a82f7);
+
+    /* Opera 11.10+ */
+    background: -o-linear-gradient(bottom, #2F2727, #1a82f7);
 }

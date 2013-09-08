@@ -37,12 +37,16 @@ app.get("/score", function(req, res) {
       var foodScore = (caloriesForUser - Math.abs(calories - caloriesForUser)) / caloriesForUser * 10;
       var sleepScore = getSleepScore(req.query.userId, req.query.date);
       resultObject = {
-        foodScore: foodScore,
-        activityScore: activityScore,
-        sleepScore: sleepScore,
-        calories: calories,
-        steps: results.steps,
-        sleep: getSleep(req.query.userId, req.query.date)
+        scores: {
+          foodScore: foodScore,
+          activityScore: activityScore,
+          sleepScore: sleepScore
+        },
+        absoluteValues: {
+          calories: calories,
+          steps: results.steps,
+          sleep: getSleep(req.query.userId, req.query.date)
+        }
       };
       res.send(resultObject);
     });

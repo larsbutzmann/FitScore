@@ -1,6 +1,12 @@
 $(function () {
 
   var dateMap = ["09-01-2013", "09-02-2013", "09-03-2013", "09-04-2013", "09-05-2013", "09-06-2013", "09-07-2013"];
+  var unitMap = {"sleep": "h", "calories": "kcal", "weight": "kg", "distance": "km"};
+
+  var colorMap = ["#ff0000", "#ff2300", "#ff4500", "#ff8000", "#ffB000", "#FFFF00", "#B0FF00", "#80FF00", "#40FF00", "#00FF00"];
+
+  // initialize
+  updateData(11, dateMap[dateMap.length-1]);
 
   $(function() {
     $( "#slider" ).slider({
@@ -9,13 +15,15 @@ $(function () {
       step: 1,
       value: 6,
       change: function( event, ui ) {
-        $("#slider-val").text(dateMap[ui.value]);
         updateData("11", dateMap[ui.value]);
+      },
+      slide: function( event, ui ) {
+        $("#slider-val").text(dateMap[ui.value]);
       }
     });
   });
 
-  $('#container').highcharts({
+  $('#chart').highcharts({
     chart: {
       polar: true,
       type: 'line'
@@ -55,7 +63,7 @@ $(function () {
     },
     series: [{
       name: 'User 1',
-      data: [9.8, 7.6, 3.5, 7.4],
+      data: [],
       pointPlacement: 'on'
     }]
   });
@@ -67,22 +75,36 @@ $(function () {
         url: "/score?userId=" + userId + "&date=" + date,
         success: function (data) {
           _log(data);
+
           var userData = [];
-          for (var o in data) {
-            if (data[o] === null) {
-              data[o] = 5;
+          for (var o in data["scores"]) {
+            if (data["scores"][o] === null) {
+              data["scores"][o] = 5;
             }
-            userData.push(data[o]);
+            userData.push(data["scores"][o]);
           }
           userData.push(7);
-          _log(userData);
-          var chart = $('#container').highcharts();
+
+          var chart = $('#chart').highcharts();
           chart.series[0].setVisible(false);
           chart.series[0].setData(userData, true);
           chart.series[0].setVisible(true, true);
+
+          var sum = 0;
+          for (var i = 0; i < userData.length; i++) {
+            sum += userData[i];
+          }
+
+          var score = Math.round(sum/(userData.length+1) * 10) / 10;
+          $("#score").text(score);
+          $("#score").css("background-color", colorMap[Math.floor(score+1)]);
+
+          for (var o in data["absoluteValues"]) {
+            $("#"+o).text(data["absoluteValues"][o] + " " + unitMap[o]);
+          }
+
         }
     });
-    var user1 = generateData();
   }
 
 });
@@ -94,11 +116,4 @@ function shuffle(o) {
 
 function _log(text) {
   return console.log(text);
-}
-
-function generateData() {
-  for (var a=[],i=0;i<4;++i) {
-    a[i] = Math.floor((Math.random()*100)+1);
-  }
-  return a;
 }

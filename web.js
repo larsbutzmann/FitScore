@@ -1,6 +1,8 @@
 var express = require("express");
-var app = express();
 var http = require("http");
+var async = require("async");
+
+var app = express();
 app.use(express.logger());
 
 app.configure(function() {
@@ -17,15 +19,21 @@ app.get('/', function (req, res) {
   res.render('index');
 });
 
-var fitbitUrl = "http://fitbitreaduser:FitBit123@shatechcrunchhana.sapvcm.com:8000/fitbit/services/distance.xsjs?userSurrId=11";
-
-http.get(fitbitUrl, function(res) {
-  console.log("Got response: " + res.statusCode);
-  res.on('data', function (chunk) {
-    console.log('BODY: ' + chunk);
-  });
-}).on('error', function(e) {
-  console.log("Got error: " + e.message);
+app.get("/score", function(req, res) {
+  async.parallel([
+      function(cb) {
+        sapdata(cb, "calories", 1, "2013-08-30", "2013-08-31");
+      },
+      function(cb) {
+        sapdata(cb, "distance", 1, "2013-08-30", "2013-08-31");
+      },
+      function(cb) {
+        sapdata(cb, "steps", 1, "2013-08-30", "2013-08-31");
+      }
+    ],
+    function(err, results) {
+      res.send(results);
+    });
 });
 
 function startKeepAlive() {
@@ -53,6 +61,28 @@ function startKeepAlive() {
 startKeepAlive();
 
 var port = process.env.PORT || 5000;
+
 app.listen(port, function() {
   console.log("Listening on " + port);
 });
+
+var sapdata = function(cb, dataName, userId, startDate, endDate) {
+  var store = '';
+  var url = "http://fitbitreaduser:FitBit123@shatechcrunchhana.sapvcm.com:8000/fitbit/services/";
+  url += dataName + "Sum.xsjs";
+  url += "?userSurrId=" + userId;
+  url += "&startDate=" + startDate;
+  url += "&endDate=" + endDate;
+
+  http.get(url, function(resp) {
+    resp.on("data", function(chunk) {
+      store += chunk;
+    })
+    .on("end", function() {
+      cb(null, store);
+    })
+    .on("error", function(e) {
+      cb("error");
+    });
+  });
+};

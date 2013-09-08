@@ -15,8 +15,10 @@ $(function () {
       step: 1,
       value: 6,
       change: function( event, ui ) {
-        $("#slider-val").text(dateMap[ui.value]);
         updateData("11", dateMap[ui.value]);
+      },
+      slide: function( event, ui ) {
+        $("#slider-val").text(dateMap[ui.value]);
       }
     });
   });

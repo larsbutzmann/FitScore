@@ -54,7 +54,7 @@ app.listen(port, function() {
   console.log("Listening on " + port);
 });
 
-app.get('/runkeeper/:metric', function(request, response) {
+app.get('/runkeeper', function(request, response) {
 
 	var options = exports.options = {
 		client_id : "7444a58b752f4cb5adc0dec149ff8f0d",
@@ -69,7 +69,7 @@ app.get('/runkeeper/:metric', function(request, response) {
 	var aggregateDataPerTimeframe = function(data, startDate, endDate) {
 		var res = { duration : 0, distance : 0, calories : 0 };
 		for(i = 0; i < data.length; i++) {
-			if (data[i].start_time >= startDate && data[i].timestamp <= endDate) {
+			if (new Date(data[i].start_time).getTime() >= new Date(startDate).getTime() && new Date(data[i].start_time).getTime() <= new Date(endDate).getTime()) {
 				res.duration += data[i].duration;
 				res.distance += data[i].total_distance;
 				res.calories += data[i].total_calories;
@@ -80,17 +80,22 @@ app.get('/runkeeper/:metric', function(request, response) {
 	
 	var client = new runkeeper.HealthGraph(options);
 	
-	if (request.params.metric == "weight") {
-		client.apiCall("GET", "application/vnd.com.runkeeper.WeightSetFeed+json", "/weight?pageSize=1", function(err, reply) {
+	if (request.query.metric == "weight") {
+		client.apiCall("GET", "application/vnd.com.runkeeper.WeightSetFeed+json", "/weight?pageSize=100", function(err, reply) {
 			if(err) { console.log(err); }
 			if(reply.items.length > 0) {
-				response.send(reply.items[0].weight + "");
+				for (i = 0; i < reply.items.length; i++) {
+				//request.query.startDate && 
+					if (new Date(reply.items[i].timestamp).toDateString() == new Date(request.query.startDate).toDateString())
+					response.send(reply.items[i].weight + "");
+				}
+				response.send(reply.items[0].weight + " sadad");
 			} else {
 				response.send("0");
 			}
 		});
 	}
-	else if (request.params.metric == "sleep") {
+	else if (request.query.metric == "sleep") {
 		client.apiCall("GET", "application/vnd.com.runkeeper.SleepSetFeed+json","/sleep?pageSize=1", function(err, reply) {
 			if(err) { console.log(err); }
 			if(reply.items.length > 0) {
@@ -101,11 +106,11 @@ app.get('/runkeeper/:metric', function(request, response) {
 			}
 		});
 	}
-	else if (request.params.metric == "active") {
+	else if (request.query.metric == "active") {
 		client.fitnessActivityFeed(function(err, reply) {
 			if(err) { console.log(err); }
 			if(reply.items.length > 0) {
-				response.send(aggregateDataPerTimeframe(reply.items, "2013-08-30", "2013-08-31"));
+				response.send(aggregateDataPerTimeframe(reply.items, "2013-08-03", "2013-08-31"));
 			} else {
 				response.send({ duration : 0, distance : 0, calories : 0 });
 			}

@@ -26,7 +26,7 @@ $(function () {
     },
 
     pane: {
-      size: '80%'
+      size: '75%'
     },
 
     xAxis: {

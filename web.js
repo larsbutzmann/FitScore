@@ -34,9 +34,11 @@ app.get("/score", function(req, res) {
       var calories = getCalories(req.query.userId, req.query.date);
       var caloriesForUser = getCaloriesForUser(req.query.userId);
       var foodScore = (caloriesForUser - Math.abs(calories - caloriesForUser)) / caloriesForUser * 10;
+      var sleepScore = getSleepScore(req.query.userId, req.query.date);
       resultObject = {
         foodScore: foodScore,
-        activityScore: activityScore
+        activityScore: activityScore,
+        sleepScore: sleepScore
       };
       res.send(resultObject);
     });
@@ -71,6 +73,20 @@ var getCaloriesForUser = function(userId) {
   var calories = number % 500 + 1500;
   return calories;
 };
+
+var getSleep = function(userId, date) {
+  var md5sum = crypto.createHash('md5');
+  md5sum.update(userId.toString());
+  md5sum.update(date.toString());
+  var number = parseInt(md5sum.digest('hex'), 16);
+  var sleep = number % 7 + 5;
+  return sleep;
+};
+
+var getSleepScore = function(userId, date) {
+  return Math.min(getSleep(userId, date), 8) / 8 * 10;
+}
+
 
 
 var sapdata = function(cb, dataName, userId, startDate, endDate) {

@@ -2,6 +2,7 @@ var express = require("express");
 var runkeeper = require('runkeeper-js');
 var http = require("http");
 var async = require("async");
+var crypto = require("crypto");
 
 var app = express();
 app.use(express.logger());
@@ -21,19 +22,29 @@ app.get('/', function (req, res) {
 });
 
 app.get("/score", function(req, res) {
-  async.parallel([
-      function(cb) {
-        sapdata(cb, "calories", 1, "2013-08-30", "2013-08-31");
+  async.parallel({
+      calories: function(cb) {
+        sapdata(cb, "calories", req.query.userId, req.query.date, req.query.date);
       },
-      function(cb) {
-        sapdata(cb, "distance", 1, "2013-08-30", "2013-08-31");
-      },
-      function(cb) {
-        sapdata(cb, "steps", 1, "2013-08-30", "2013-08-31");
+      steps: function(cb) {
+        sapdata(cb, "steps", req.query.userId, req.query.date, req.query.date);
       }
-    ],
+    },
     function(err, results) {
-      res.send(results);
+      var activityScore = calculateStepScore(results.steps);
+      var calories = getCalories(req.query.userId, req.query.date);
+      var caloriesForUser = getCaloriesForUser(req.query.userId);
+      var foodScore = (caloriesForUser - Math.abs(calories - caloriesForUser)) / caloriesForUser * 10;
+      var sleepScore = getSleepScore(req.query.userId, req.query.date);
+      resultObject = {
+        foodScore: foodScore,
+        activityScore: activityScore,
+        sleepScore: sleepScore,
+        calories: calories,
+        steps: results.steps,
+        sleep: getSleep(req.query.userId, req.query.date)
+      };
+      res.send(resultObject);
     });
 });
 
@@ -103,6 +114,43 @@ app.get('/runkeeper/:metric', function(request, response) {
 	else response.send("try:	/weight /sleep /active ");
 });
 
+var calculateStepScore = function(steps) {
+  var max_steps = 10000;
+  return Math.min(steps, max_steps) / max_steps * 10;
+};
+
+// FIXME
+var getCalories = function(userId, date) {
+  var md5sum = crypto.createHash('md5');
+  md5sum.update(userId.toString());
+  md5sum.update(date.toString());
+  var number = parseInt(md5sum.digest('hex'), 16);
+  var calories = number % 2000 + 1000;
+  return calories;
+};
+
+// FIXME
+var getCaloriesForUser = function(userId) {
+  var md5sum = crypto.createHash('md5');
+  md5sum.update(userId.toString());
+  var number = parseInt(md5sum.digest('hex'), 16);
+  var calories = number % 500 + 1500;
+  return calories;
+};
+
+var getSleep = function(userId, date) {
+  var md5sum = crypto.createHash('md5');
+  md5sum.update(userId.toString());
+  md5sum.update(date.toString());
+  var number = parseInt(md5sum.digest('hex'), 16);
+  var sleep = number % 7 + 5;
+  return sleep;
+};
+
+var getSleepScore = function(userId, date) {
+  return Math.min(getSleep(userId, date), 8) / 8 * 10;
+};
+
 var sapdata = function(cb, dataName, userId, startDate, endDate) {
   var store = '';
   var url = "http://fitbitreaduser:FitBit123@shatechcrunchhana.sapvcm.com:8000/fitbit/services/";
@@ -116,7 +164,9 @@ var sapdata = function(cb, dataName, userId, startDate, endDate) {
       store += chunk;
     })
     .on("end", function() {
-      cb(null, store);
+      var jsonRes = JSON.parse(store);
+      var number = jsonRes[dataName];
+      cb(null, number);
     })
     .on("error", function(e) {
       cb("error");

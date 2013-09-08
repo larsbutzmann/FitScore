@@ -8,16 +8,43 @@ body {
     height: 100%;
 }
 
-canvas {
-    width: auto !important;
-    height: 100% !important;
+body hr {
+    margin: 0px;
 }
 
-#main {
-    margin: 0 auto;
-    width: 80%;
+.cockpit {
+    margin: 10px;
+    padding: 30px 10px;
+    background-color: #FFD687;
 }
 
-#top {
-    height: 100px;
+.cockpit h3 {
+    font-weight: bold;
+}
+
+.cockpit p {
+    font-size: 2em;
+}
+
+#slider-val {
+    text-align: center;
+}
+
+.score {
+    font-size: 10em;
+    text-align: center;
+    padding: 25px;
+}
+
+.header {
+    background-color: #FAFAFA;
+}
+
+#footer {
+    padding: 20px;
+    background-color: #FAFAFA;
+}
+
+#footer img {
+    margin-left: 50px;
 }

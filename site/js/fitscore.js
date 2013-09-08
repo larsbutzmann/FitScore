@@ -1,52 +1,51 @@
 $(function () {
 
+  var dateMap = ["09-01-2013", "09-02-2013", "09-03-2013", "09-04-2013", "09-05-2013", "09-06-2013", "09-07-2013"];
+
   $(function() {
     $( "#slider" ).slider({
       min: 0,
-      max: 10,
+      max: 6,
       step: 1,
-      value: 10,
-      slide: function( event, ui ) {
-        $("#slide-val").text(ui.value);
-        updateData();
+      value: 6,
+      change: function( event, ui ) {
+        $("#slider-val").text(dateMap[ui.value]);
+        updateData("11", dateMap[ui.value]);
       }
     });
   });
 
   $('#container').highcharts({
-
     chart: {
       polar: true,
       type: 'line'
     },
-
     title: {
       text: '',
       x: 0
     },
-
+    colors: [
+      "#FFA800"
+    ],
     pane: {
-      size: '80%'
+      size: '75%'
     },
-
     xAxis: {
-      categories: ["Sleep", "Activity", "Distance", "Weight"],
+      categories: ["Food", "Activity", "Sleep", "Weight"],
       tickmarkPlacement: 'on',
       lineWidth: 0
     },
-
     yAxis: {
       gridLineInterpolation: 'polygon',
       lineWidth: 0,
       min: 0,
-      max: 100
+      max: 10,
+      tickInterval: 2
     },
-
     tooltip: {
       shared: true,
       pointFormat: '<span style="color:{series.color}">{series.name}: <b>{point.y:,.0f}</b><br/>'
     },
-
     legend: {
       enabled: false,
       align: 'right',
@@ -54,20 +53,36 @@ $(function () {
       y: 70,
       layout: 'vertical'
     },
-
     series: [{
       name: 'User 1',
-      data: [65,59,90,81],
+      data: [9.8, 7.6, 3.5, 7.4],
       pointPlacement: 'on'
     }]
   });
 
-  function updateData() {
+  function updateData(userId, date) {
+    $.ajax({
+        type: 'GET',
+        dataType: 'json',
+        url: "/score?userId=" + userId + "&date=" + date,
+        success: function (data) {
+          _log(data);
+          var userData = [];
+          for (var o in data) {
+            if (data[o] === null) {
+              data[o] = 5;
+            }
+            userData.push(data[o]);
+          }
+          userData.push(7);
+          _log(userData);
+          var chart = $('#container').highcharts();
+          chart.series[0].setVisible(false);
+          chart.series[0].setData(userData, true);
+          chart.series[0].setVisible(true, true);
+        }
+    });
     var user1 = generateData();
-    var chart = $('#container').highcharts();
-    chart.series[0].setVisible(false);
-    chart.series[0].setData(user1, true);
-    chart.series[0].setVisible(true, true);
   }
 
 });
